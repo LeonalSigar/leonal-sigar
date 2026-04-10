@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leonal Sigar — AdOps & Data Artist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,700;12..96,800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── THEME TOKENS ── */
+[data-theme="dark"]{
+  --bg:#06060f;--bg2:#0c0c1c;--bg3:#111125;
+  --glass:rgba(255,255,255,0.04);--glass2:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.07);--border-hi:rgba(255,255,255,0.15);
+  --text:#edeae0;--muted:rgba(237,234,224,0.5);--faint:rgba(237,234,224,0.22);
+  --teal:#5eead4;--purple:#a78bfa;--gold:#f59e0b;
+  --nav-bg:rgba(6,6,15,0.85);
+  --modal-bg:#0e0e20;
+  --input-bg:rgba(255,255,255,0.05);
+  --input-border:rgba(255,255,255,0.12);
+}
+[data-theme="light"]{
+  --bg:#f8f7f4;--bg2:#f0eeea;--bg3:#e8e6e0;
+  --glass:rgba(0,0,0,0.03);--glass2:rgba(0,0,0,0.06);
+  --border:rgba(0,0,0,0.08);--border-hi:rgba(0,0,0,0.18);
+  --text:#1a1a2e;--muted:rgba(26,26,46,0.55);--faint:rgba(26,26,46,0.3);
+  --teal:#0d9488;--purple:#7c3aed;--gold:#d97706;
+  --nav-bg:rgba(248,247,244,0.9);
+  --modal-bg:#ffffff;
+  --input-bg:rgba(0,0,0,0.04);
+  --input-border:rgba(0,0,0,0.15);
+}
+
+html{scroll-behavior:smooth}
+body{font-family:'Bricolage Grotesque',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;cursor:none;transition:background .3s,color .3s}
+
+/* CURSOR */
+.cur,.cur-ring{position:fixed;pointer-events:none;z-index:9999;border-radius:50%;transform:translate(-50%,-50%)}
+.cur{width:8px;height:8px;background:var(--teal);mix-blend-mode:difference;transition:width .15s,height .15s}
+.cur-ring{width:32px;height:32px;border:1px solid rgba(94,234,212,0.35);transition:width .3s,height .3s}
+[data-theme="light"] .cur{background:var(--teal)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:1.4rem 4rem;background:var(--nav-bg);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);animation:fadeDown .7s ease both;transition:background .3s}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.1em;color:var(--text);text-decoration:none}
+.nav-logo span{color:var(--teal)}
+.nav-right{display:flex;align-items:center;gap:2.5rem}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1px;background:var(--teal);transition:width .3s}
+.nav-links a:hover{color:var(--text)}
+.nav-links a:hover::after{width:100%}
+
+/* THEME TOGGLE */
+.theme-btn{width:44px;height:24px;border-radius:100px;border:1px solid var(--border-hi);background:var(--glass);cursor:none;position:relative;transition:background .3s;flex-shrink:0}
+.theme-btn::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--teal);transition:transform .3s}
+[data-theme="light"] .theme-btn::after{transform:translateX(20px)}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 4rem 5rem;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 55% 45% at 75% 25%,rgba(94,234,212,.08) 0%,transparent 60%),radial-gradient(ellipse 45% 55% at 15% 70%,rgba(167,139,250,.07) 0%,transparent 60%),radial-gradient(ellipse 40% 50% at 50% 50%,rgba(229,72,77,.03) 0%,transparent 70%)}
+[data-theme="light"] .hero-bg{background:radial-gradient(ellipse 55% 45% at 75% 25%,rgba(13,148,136,.06) 0%,transparent 60%),radial-gradient(ellipse 45% 55% at 15% 70%,rgba(124,58,237,.05) 0%,transparent 60%)}
+.hero-grid{position:absolute;inset:0;z-index:0;background-image:linear-gradient(rgba(255,255,255,.016) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.016) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse at 50% 0%,black 20%,transparent 75%)}
+[data-theme="light"] .hero-grid{background-image:linear-gradient(rgba(0,0,0,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.03) 1px,transparent 1px)}
+.hero-eyebrow{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:1.5rem;z-index:1;animation:fadeUp 1s .2s both}
+.hero-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(5rem,12vw,11rem);line-height:.92;letter-spacing:.02em;z-index:1;animation:fadeUp 1s .35s both}
+.hero-name .ghost{color:transparent;-webkit-text-stroke:1px var(--border-hi)}
+.hero-sub{max-width:520px;margin-top:2.5rem;font-size:1rem;line-height:1.85;color:var(--muted);z-index:1;animation:fadeUp 1s .5s both}
+.hero-sub strong{color:var(--text);font-weight:600}
+.hero-ctas{display:flex;gap:1rem;margin-top:2.5rem;z-index:1;animation:fadeUp 1s .65s both}
+.btn-p{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 2rem;border-radius:100px;background:var(--teal);color:#06060f;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;cursor:none;transition:transform .2s,box-shadow .2s;box-shadow:0 0 28px rgba(94,234,212,.2)}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 0 45px rgba(94,234,212,.4)}
+.btn-o{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 2rem;border-radius:100px;border:1px solid var(--border-hi);color:var(--text);font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;cursor:none;background:var(--glass);transition:background .2s,transform .2s}
+.btn-o:hover{background:var(--glass2);transform:translateY(-2px)}
+.hero-scroll-line{position:absolute;right:4.5rem;bottom:0;width:1px;height:90px;background:linear-gradient(to bottom,rgba(94,234,212,.4),transparent);z-index:1;animation:fadeUp 1s .9s both}
+
+/* HERO VIZ */
+.hero-viz{position:absolute;right:4rem;top:50%;transform:translateY(-50%);z-index:1;animation:fadeUp 1s .7s both;display:flex;flex-direction:column;gap:1.5rem}
+.viz-bar-row{display:flex;flex-direction:column;gap:.4rem}
+.viz-bar-label{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--faint);text-transform:uppercase;display:flex;justify-content:space-between}
+.viz-bar-track{width:200px;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.viz-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--teal),var(--purple));transform-origin:left;transform:scaleX(0);transition:transform 1.8s cubic-bezier(.23,1,.32,1)}
+.viz-bar-fill.go{transform:scaleX(1)}
+.viz-counter{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.05em;color:var(--teal)}
+
+/* MARQUEE */
+.mq-wrap{overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1rem 0;background:var(--bg2);transition:background .3s}
+.mq-track{display:flex;gap:2.5rem;animation:marquee 24s linear infinite;width:max-content}
+.mq-item{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);white-space:nowrap;display:flex;align-items:center;gap:.75rem}
+.mq-dot{width:3px;height:3px;border-radius:50%;background:var(--teal);flex-shrink:0}
+
+/* SECTIONS */
+section{padding:7rem 4rem;position:relative;transition:background .3s}
+.sec-label{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.75rem;display:flex;align-items:center;gap:.75rem}
+.sec-label::after{content:'';flex:0 0 40px;height:1px;background:var(--border)}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,5vw,4.5rem);line-height:1;letter-spacing:.04em;margin-bottom:.5rem}
+.sec-title em{font-family:'Bricolage Grotesque',sans-serif;font-style:italic;font-weight:300;color:var(--teal);letter-spacing:-.01em}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:6rem;align-items:start;margin-top:4rem}
+.about-body{font-size:1rem;line-height:1.9;color:var(--muted)}
+.about-body strong{color:var(--text);font-weight:600}
+.about-body p+p{margin-top:1.2rem}
+.skills-wrap{margin-top:2.5rem;display:flex;flex-wrap:wrap;gap:.5rem}
+.sk{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.05em;padding:.35rem .85rem;border-radius:100px;border:1px solid var(--border);color:var(--muted);transition:all .2s;cursor:default}
+.sk:hover,.sk.on{border-color:rgba(94,234,212,.4);color:var(--teal);background:rgba(94,234,212,.07)}
+.sk.p{border-color:rgba(167,139,250,.35);color:var(--purple);background:rgba(167,139,250,.07)}
+.stats{display:flex;flex-direction:column;gap:0}
+.stat{display:flex;align-items:center;gap:2rem;padding:1.5rem 0;border-bottom:1px solid var(--border)}
+.stat:first-child{border-top:1px solid var(--border)}
+.stat-n{font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:.05em;color:var(--teal);min-width:95px;line-height:1}
+.stat-l{font-size:.85rem;line-height:1.5;color:var(--muted)}
+
+/* EXPERIENCE */
+.exp-list{margin-top:4rem}
+.exp-item{display:grid;grid-template-columns:220px 1fr;gap:3rem;padding:3rem 0;border-top:1px solid var(--border)}
+.exp-item:last-child{border-bottom:1px solid var(--border)}
+.exp-date{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;color:var(--faint)}
+.exp-co{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin-top:.5rem}
+.exp-badge{display:inline-block;font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.08em;padding:.25rem .6rem;border-radius:4px;background:rgba(94,234,212,.1);color:var(--teal);border:1px solid rgba(94,234,212,.2);margin-top:.6rem}
+.exp-role{font-size:1.4rem;font-weight:700;margin-bottom:1rem;letter-spacing:-.01em}
+.exp-desc{font-size:.88rem;line-height:1.8;color:var(--muted);margin-bottom:.75rem}
+.exp-ul{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.exp-ul li{font-size:.85rem;color:var(--muted);line-height:1.7;padding-left:1.25rem;position:relative}
+.exp-ul li::before{content:'→';position:absolute;left:0;color:var(--teal);font-size:.75rem;top:.05rem}
+.exp-ul li strong{color:var(--text);font-weight:600}
+.exp-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1.25rem}
+.exp-tag{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.05em;padding:.25rem .6rem;border-radius:4px;background:var(--glass);color:var(--faint);border:1px solid var(--border)}
+
+/* PROJECTS */
+.proj-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-top:4rem}
+.proj-card{padding:2.25rem;border-radius:16px;border:1px solid var(--border);background:var(--glass);backdrop-filter:blur(12px);position:relative;overflow:hidden;transition:border-color .3s,transform .3s,box-shadow .3s;cursor:none}
+.proj-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 0% 0%,rgba(94,234,212,.07) 0%,transparent 55%);opacity:0;transition:opacity .4s}
+.proj-card:hover{border-color:var(--border-hi);transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.2)}
+.proj-card:hover::before{opacity:1}
+.proj-card.wide{grid-column:1/-1;display:grid;grid-template-columns:1.2fr 1fr;gap:3rem;align-items:center}
+.proj-card.gold::before{background:radial-gradient(circle at 0% 0%,rgba(245,158,11,.08) 0%,transparent 55%)}
+.proj-card.gold:hover{border-color:rgba(245,158,11,.35)}
+.proj-card.pur::before{background:radial-gradient(circle at 0% 0%,rgba(167,139,250,.08) 0%,transparent 55%)}
+.proj-card.pur:hover{border-color:rgba(167,139,250,.35)}
+.proj-num{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.15em;color:var(--faint);margin-bottom:1.25rem}
+.proj-title{font-size:1.2rem;font-weight:700;margin-bottom:.6rem;letter-spacing:-.01em}
+.proj-desc{font-size:.85rem;line-height:1.75;color:var(--muted)}
+.proj-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1.25rem}
+.ptag{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.05em;padding:.25rem .6rem;border-radius:4px}
+.ptag.t{background:rgba(94,234,212,.09);color:var(--teal)}
+.ptag.g{background:rgba(245,158,11,.09);color:var(--gold)}
+.ptag.p{background:rgba(167,139,250,.09);color:var(--purple)}
+.pm{display:flex;flex-direction:column;gap:2rem}
+.pm-n{font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:.05em;color:var(--teal);line-height:1}
+.pm-l{font-size:.75rem;color:var(--faint);margin-top:.2rem}
+.proj-more{display:inline-flex;align-items:center;gap:.4rem;margin-top:1.5rem;font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);cursor:none;transition:gap .2s;border:none;background:none;padding:0}
+.proj-more:hover{gap:.7rem}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--modal-bg);border:1px solid var(--border-hi);border-radius:20px;width:90%;max-width:680px;max-height:85vh;overflow-y:auto;padding:3rem;position:relative;transform:translateY(20px);transition:transform .3s,background .3s}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-close{position:absolute;top:1.5rem;right:1.5rem;width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--glass);color:var(--text);font-size:1.1rem;cursor:none;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.modal-close:hover{background:var(--glass2)}
+.modal-tag{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--teal);text-transform:uppercase;margin-bottom:.75rem}
+.modal-title{font-size:1.6rem;font-weight:800;margin-bottom:1rem;letter-spacing:-.02em}
+.modal-body{font-size:.9rem;line-height:1.9;color:var(--muted)}
+.modal-body strong{color:var(--text);font-weight:600}
+.modal-body p+p{margin-top:1rem}
+.modal-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem;padding-top:2rem;border-top:1px solid var(--border)}
+.modal-metric-n{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--teal);line-height:1}
+.modal-metric-l{font-size:.72rem;color:var(--faint);margin-top:.2rem}
+.modal-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1.5rem}
+
+/* EDUCATION */
+.edu-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-top:4rem}
+.edu-card{padding:2.25rem;border-radius:16px;border:1px solid var(--border);background:var(--glass);position:relative;overflow:hidden;transition:background .3s}
+.edu-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--teal),var(--purple))}
+.edu-school{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:.5rem}
+.edu-deg{font-size:1.05rem;font-weight:700;margin-bottom:.4rem;line-height:1.3}
+.edu-yr{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--faint);margin-bottom:.9rem}
+.edu-detail{font-size:.82rem;line-height:1.7;color:var(--muted)}
+.cert-row{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.5rem}
+.cert{display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem;border-radius:100px;border:1px solid var(--border-hi);background:rgba(94,234,212,.06);font-size:.75rem;font-weight:600;color:var(--teal)}
+.cdot{width:5px;height:5px;border-radius:50%;background:var(--teal);flex-shrink:0}
+.lead-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;margin-top:1.5rem}
+.lead-card{padding:2rem;border-radius:16px;border:1px solid var(--border);background:var(--glass);transition:background .3s}
+.lead-year{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.12em;color:var(--faint);margin-bottom:.6rem}
+.lead-title{font-size:.95rem;font-weight:700;margin-bottom:.4rem}
+.lead-org{font-size:.8rem;color:var(--muted);line-height:1.5}
+
+/* CONTACT */
+.contact-inner{max-width:680px;margin:4rem auto 0;text-align:center}
+.contact-email{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,4vw,3.2rem);letter-spacing:.06em;color:var(--text);text-decoration:none;background:linear-gradient(135deg,var(--text),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;transition:opacity .2s}
+.contact-email:hover{opacity:.75}
+.contact-sub{font-size:.9rem;color:var(--muted);line-height:1.8;margin-bottom:2.5rem}
+.social-row{display:flex;justify-content:center;gap:1.5rem;margin-top:2rem}
+.soc{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+.soc:hover{color:var(--teal)}
+
+/* CONTACT FORM */
+.contact-form{margin-top:3rem;text-align:left;background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:2.5rem;transition:background .3s,border .3s}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-group{display:flex;flex-direction:column;gap:.5rem}
+.form-group.full{grid-column:1/-1}
+.form-label{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.form-input,.form-textarea{font-family:'Bricolage Grotesque',sans-serif;font-size:.9rem;padding:.8rem 1rem;border-radius:8px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);outline:none;transition:border-color .2s,background .3s;width:100%}
+.form-input:focus,.form-textarea:focus{border-color:var(--teal)}
+.form-textarea{resize:vertical;min-height:120px;line-height:1.6}
+.form-btn{margin-top:1rem;padding:.9rem 2.5rem;border-radius:100px;background:var(--teal);color:#06060f;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;border:none;cursor:none;transition:transform .2s,box-shadow .2s,opacity .2s;box-shadow:0 0 24px rgba(94,234,212,.2)}
+.form-btn:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(94,234,212,.4)}
+.form-btn:disabled{opacity:.5;transform:none}
+.form-success{display:none;font-family:'DM Mono',monospace;font-size:.8rem;letter-spacing:.08em;color:var(--teal);margin-top:1rem;text-align:center}
+
+/* FOOTER */
+footer{padding:2rem 4rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;transition:border .3s}
+footer p{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--faint)}
+
+/* NOISE */
+body::after{content:'';position:fixed;inset:0;z-index:600;pointer-events:none;opacity:.018;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* MOBILE */
+@media(max-width:900px){
+  nav{padding:1.2rem 1.5rem}.nav-links{display:none}
+  section{padding:5rem 1.5rem}.hero{padding:0 1.5rem 4rem}
+  .about-grid,.proj-grid,.edu-grid,.lead-grid,.form-grid{grid-template-columns:1fr;gap:2rem}
+  .proj-card.wide{grid-column:auto;grid-template-columns:1fr}
+  .exp-item{grid-template-columns:1fr;gap:.5rem}
+  footer{flex-direction:column;gap:.75rem;text-align:center}
+  .hero-scroll-line,.hero-viz{display:none}
+  .modal-metrics{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="cur-ring"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal">
+    <button class="modal-close" id="modal-close">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">L<span>.</span>SIGAR</a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#education">Education</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="theme-btn" id="theme-btn" title="Toggle theme"></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <!-- Animated data viz -->
+  <div class="hero-viz" id="hero-viz">
+    <div class="viz-bar-row">
+      <div class="viz-bar-label"><span>Campaign Accuracy</span><span class="viz-counter" id="c1">0%</span></div>
+      <div class="viz-bar-track"><div class="viz-bar-fill" id="b1" style="width:94%"></div></div>
+    </div>
+    <div class="viz-bar-row">
+      <div class="viz-bar-label"><span>ML Model R²</span><span class="viz-counter" id="c2">0%</span></div>
+      <div class="viz-bar-track"><div class="viz-bar-fill" id="b2" style="width:99%"></div></div>
+    </div>
+    <div class="viz-bar-row">
+      <div class="viz-bar-label"><span>Content Approval</span><span class="viz-counter" id="c3">0%</span></div>
+      <div class="viz-bar-track"><div class="viz-bar-fill" id="b3" style="width:98%"></div></div>
+    </div>
+    <div class="viz-bar-row">
+      <div class="viz-bar-label"><span>Visibility Lift</span><span class="viz-counter" id="c4">0%</span></div>
+      <div class="viz-bar-track"><div class="viz-bar-fill" id="b4" style="width:80%"></div></div>
+    </div>
+  </div>
+
+  <div class="hero-eyebrow">AdOps Specialist · Data Artist · Builder</div>
+  <h1 class="hero-name">LEONAL<br><span class="ghost">SIGAR</span></h1>
+  <p class="hero-sub">
+    Running <strong>end-to-end ad operations for a leading global OTT platform</strong> at Cognizant —
+    while building automation tools, ML systems, and visual campaigns
+    that turn complex data into things people actually understand.
+  </p>
+  <div class="hero-ctas">
+    <a href="#projects" class="btn-p">View Work</a>
+    <a href="#contact" class="btn-o">Get in Touch</a>
+  </div>
+  <div class="hero-scroll-line"></div>
+</section>
+
+<!-- MARQUEE -->
+<div class="mq-wrap">
+  <div class="mq-track">
+    <span class="mq-item"><span class="mq-dot"></span>OTT Ad Operations</span>
+    <span class="mq-item"><span class="mq-dot"></span>Campaign Automation</span>
+    <span class="mq-item"><span class="mq-dot"></span>Programmatic Deals</span>
+    <span class="mq-item"><span class="mq-dot"></span>Google Apps Script</span>
+    <span class="mq-item"><span class="mq-dot"></span>NLP · Python</span>
+    <span class="mq-item"><span class="mq-dot"></span>Data Visualisation</span>
+    <span class="mq-item"><span class="mq-dot"></span>Adobe Creative Suite</span>
+    <span class="mq-item"><span class="mq-dot"></span>APAC Markets</span>
+    <span class="mq-item"><span class="mq-dot"></span>Machine Learning</span>
+    <span class="mq-item"><span class="mq-dot"></span>JP · KR · AU · SG</span>
+    <span class="mq-item"><span class="mq-dot"></span>OTT Ad Operations</span>
+    <span class="mq-item"><span class="mq-dot"></span>Campaign Automation</span>
+    <span class="mq-item"><span class="mq-dot"></span>Programmatic Deals</span>
+    <span class="mq-item"><span class="mq-dot"></span>Google Apps Script</span>
+    <span class="mq-item"><span class="mq-dot"></span>NLP · Python</span>
+    <span class="mq-item"><span class="mq-dot"></span>Data Visualisation</span>
+    <span class="mq-item"><span class="mq-dot"></span>Adobe Creative Suite</span>
+    <span class="mq-item"><span class="mq-dot"></span>APAC Markets</span>
+    <span class="mq-item"><span class="mq-dot"></span>Machine Learning</span>
+    <span class="mq-item"><span class="mq-dot"></span>JP · KR · AU · SG</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="sec-label">01 — About</div>
+  <h2 class="sec-title reveal">TWO WORLDS,<br><em>one person</em></h2>
+  <div class="about-grid">
+    <div>
+      <div class="about-body reveal" style="transition-delay:.1s">
+        <p>I'm <strong>Leonal Sigar</strong>, a VAO Specialist at <strong>Cognizant</strong> managing
+        full-cycle ad operations for a leading global OTT platform across APAC —
+        Japan, Korea, Australia, and Singapore. From campaign setup and QC through
+        programmatic deal management, pacing, and reporting: I own the entire lifecycle.</p>
+        <p>Outside of operations, I build the tools that make teams faster — workflow
+        automation, AI-assisted queue management, and live dashboards. And in parallel,
+        I'm pursuing a <strong>Master's in Data Science at University of Malaya</strong>,
+        applying ML and NLP to problems that actually matter.</p>
+        <p>Creative background in multimedia computing meets operational precision in
+        ad tech. If the process is slow, I automate it. If the data needs a story, I design it.</p>
+      </div>
+      <div class="skills-wrap reveal" style="transition-delay:.15s">
+        <span class="sk on">Ad Operations</span>
+        <span class="sk on">Programmatic (PMP/PG)</span>
+        <span class="sk on">Campaign Lifecycle Mgmt</span>
+        <span class="sk on">Workflow Automation</span>
+        <span class="sk on">Google Apps Script</span>
+        <span class="sk p">Python · scikit-learn</span>
+        <span class="sk p">XGBoost · Transformers</span>
+        <span class="sk p">NLP · Plotly · Tableau</span>
+        <span class="sk">Adobe Creative Suite</span>
+        <span class="sk">Figma · Canva</span>
+        <span class="sk">HTML · CSS · JS</span>
+        <span class="sk">Google Analytics 4</span>
+        <span class="sk">Premiere Pro · After Effects</span>
+        <span class="sk">Data Storytelling</span>
+      </div>
+    </div>
+    <div class="stats reveal" style="transition-delay:.2s">
+      <div class="stat">
+        <div class="stat-n" data-count="4" data-suffix="M+">0</div>
+        <div class="stat-l">Monthly views generated through<br>university social campaigns</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" data-count="94" data-suffix="%">0</div>
+        <div class="stat-l">NLP model accuracy on mental health<br>crisis detection (UM 2025)</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" data-count="70" data-suffix="+">0</div>
+        <div class="stat-l">People led across 15 student<br>organisations at UNIMAS</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" data-count="30" data-suffix="+">0</div>
+        <div class="stat-l">Multimedia assets produced with<br>98% client approval rate</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" style="background:var(--bg2)">
+  <div class="sec-label">02 — Experience</div>
+  <h2 class="sec-title reveal">WHAT I'VE<br><em>done</em></h2>
+  <div class="exp-list">
+
+    <div class="exp-item reveal">
+      <div>
+        <div class="exp-date">2024 — Present</div>
+        <div class="exp-co">Cognizant</div>
+        <div class="exp-badge">Current · OTT AdOps APAC</div>
+      </div>
+      <div>
+        <div class="exp-role">Vendor Ad Operations Specialist</div>
+        <div class="exp-desc">Full-cycle ad operations supporting a leading global OTT platform across APAC markets. End-to-end ownership of every campaign from brief to launch, pacing, and close-out.</div>
+        <ul class="exp-ul">
+          <li>Manage the <strong>complete campaign lifecycle</strong> across Japan, Korea, Australia, and Singapore — trafficking, creative QC, pre-launch checks, and launch coordination.</li>
+          <li>Execute and manage <strong>programmatic deal workflows</strong> (direct and auction-based) including flight management, pacing oversight, and SSP coordination.</li>
+          <li>Deliver EOC and recurring performance reports; handle cross-regional handovers and coverage planning across the APAC pod.</li>
+          <li>Built a suite of <strong>internal automation tools</strong> — live WIP dashboards, an AI-assisted queue management agent, and a knowledge repository — adopted across the team.</li>
+        </ul>
+        <div class="exp-tags">
+          <span class="exp-tag">Ad Operations</span><span class="exp-tag">Programmatic</span>
+          <span class="exp-tag">Campaign QC</span><span class="exp-tag">Reporting</span>
+          <span class="exp-tag">Workflow Automation</span><span class="exp-tag">AI Tools</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="exp-item reveal">
+      <div>
+        <div class="exp-date">Mar 2025 — Present</div>
+        <div class="exp-co">Grand Holidays Travel</div>
+      </div>
+      <div>
+        <div class="exp-role">Digital Marketing Specialist</div>
+        <ul class="exp-ul">
+          <li>Created B2B sales collateral and infographics, contributing to a <strong>RM1M+ corporate pipeline</strong> through visual storytelling.</li>
+          <li>Built performance dashboards for monthly stakeholder reporting across ads and social media.</li>
+          <li>Integrated CRM data with visual content workflows; managed SEO and digital branding pipeline.</li>
+        </ul>
+        <div class="exp-tags">
+          <span class="exp-tag">Adobe Suite</span><span class="exp-tag">Analytics</span>
+          <span class="exp-tag">CRM</span><span class="exp-tag">SEO</span><span class="exp-tag">Infographic Design</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="exp-item reveal">
+      <div>
+        <div class="exp-date">Dec 2024 — Mar 2025</div>
+        <div class="exp-co">Maltimur Resources</div>
+        <div class="exp-badge">Protégé Programme</div>
+      </div>
+      <div>
+        <div class="exp-role">Content Creator & Visual Designer</div>
+        <ul class="exp-ul">
+          <li>Produced <strong>30+ multimedia assets</strong> — motion graphics, infographics, corporate videos — using Premiere Pro, After Effects, Photoshop.</li>
+          <li>Managed 6 corporate recap videos end-to-end with <strong>98% approval rating</strong>; handled scriptwriting, animation, colour grading, audio mixing.</li>
+          <li>Conducted social media audit; managed <strong>100+ content pieces</strong> with performance tracking.</li>
+        </ul>
+        <div class="exp-tags">
+          <span class="exp-tag">Premiere Pro</span><span class="exp-tag">After Effects</span>
+          <span class="exp-tag">Photoshop</span><span class="exp-tag">Content Strategy</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="exp-item reveal">
+      <div>
+        <div class="exp-date">2022 — 2024</div>
+        <div class="exp-co">UNIMAS</div>
+      </div>
+      <div>
+        <div class="exp-role">Strategic Campaign Lead</div>
+        <ul class="exp-ul">
+          <li>Orchestrated multi-platform campaigns generating <strong>4M+ monthly views</strong> across Instagram, Facebook, TikTok, and LinkedIn.</li>
+          <li>Led teams of <strong>70+ individuals</strong> across 15 student organisations; lifted university visibility by 80%.</li>
+          <li>Built performance dashboards for university events with full KPI measurement.</li>
+        </ul>
+        <div class="exp-tags">
+          <span class="exp-tag">Campaign Strategy</span><span class="exp-tag">Analytics</span>
+          <span class="exp-tag">Social Media</span><span class="exp-tag">Team Leadership</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="sec-label">03 — Projects</div>
+  <h2 class="sec-title reveal">THINGS I<br><em>built</em></h2>
+  <div class="proj-grid">
+
+    <div class="proj-card wide gold reveal">
+      <div>
+        <div class="proj-num">01 — Internal Tool · Cognizant APAC</div>
+        <div class="proj-title">AI Queue Management Agent</div>
+        <p class="proj-desc">Built an AI-assisted operational agent for the APAC ad operations team, consolidating three workflows into a single tool. Architected for reliability across all team members.</p>
+        <div class="proj-tags">
+          <span class="ptag g">AI Agent</span><span class="ptag g">Workflow Automation</span>
+          <span class="ptag g">AdOps</span><span class="ptag g">APAC</span>
+        </div>
+        <button class="proj-more" onclick="openModal('agent')">View Details →</button>
+      </div>
+      <div class="pm">
+        <div><div class="pm-n" style="color:var(--gold)">3</div><div class="pm-l">Workflows unified in one agent</div></div>
+        <div><div class="pm-n" style="color:var(--gold)">22</div><div class="pm-l">Team members supported</div></div>
+        <div><div class="pm-n" style="color:var(--gold)">0</div><div class="pm-l">Resolution failures after fix</div></div>
+      </div>
+    </div>
+
+    <div class="proj-card pur reveal">
+      <div class="proj-num">02 — Automation · JP · AU · KR</div>
+      <div class="proj-title">Live WIP Dashboard Suite</div>
+      <p class="proj-desc">Google Apps Script automation suite building real-time WIP dashboards for multiple APAC pods. Auto-syncs, colour-codes per person, tracks SLAs, runs on automatic triggers.</p>
+      <div class="proj-tags">
+        <span class="ptag p">Google Apps Script</span>
+        <span class="ptag p">Sheets Automation</span>
+        <span class="ptag p">SLA Tracking</span>
+      </div>
+      <button class="proj-more" onclick="openModal('wip')">View Details →</button>
+    </div>
+
+    <div class="proj-card reveal">
+      <div class="proj-num">03 — Internal Tool · APAC</div>
+      <div class="proj-title">Team Knowledge Repository</div>
+      <p class="proj-desc">A web app backed by Google Sheets for capturing exemplary work references with screenshots. Fixed a complex file encoding bug. Designed for team-wide access.</p>
+      <div class="proj-tags">
+        <span class="ptag t">Apps Script</span>
+        <span class="ptag t">Google Sheets</span>
+        <span class="ptag t">Drive API</span>
+      </div>
+      <button class="proj-more" onclick="openModal('repo')">View Details →</button>
+    </div>
+
+    <div class="proj-card wide reveal">
+      <div>
+        <div class="proj-num">04 — ML Research · University of Malaya 2025</div>
+        <div class="proj-title">Mental Health Crisis Detection — NLP System</div>
+        <p class="proj-desc">Built NLP classification models to detect mental health crises in text. Reduced false negative rate by 44%. Created interactive dashboards to communicate model performance to non-technical stakeholders.</p>
+        <div class="proj-tags">
+          <span class="ptag t">Python</span><span class="ptag t">Transformers</span>
+          <span class="ptag t">scikit-learn</span><span class="ptag t">NLTK</span>
+        </div>
+        <button class="proj-more" onclick="openModal('nlp')">View Details →</button>
+      </div>
+      <div class="pm">
+        <div><div class="pm-n">94.2%</div><div class="pm-l">Classification accuracy</div></div>
+        <div><div class="pm-n">44%</div><div class="pm-l">False negative rate reduction</div></div>
+      </div>
+    </div>
+
+    <div class="proj-card reveal">
+      <div class="proj-num">05 — ML · University of Malaya 2025</div>
+      <div class="proj-title">E-commerce Sales Prediction</div>
+      <p class="proj-desc">ML forecasting with XGBoost and SVR. 280+ survey responses analysed. Interactive GUI dashboard for real-time analytics.</p>
+      <div class="proj-tags">
+        <span class="ptag t">XGBoost</span><span class="ptag t">SVR</span><span class="ptag t">Tkinter</span>
+      </div>
+      <div style="margin-top:1.5rem">
+        <div class="pm-n" style="font-size:2.2rem">99.1%</div>
+        <div class="pm-l">R² Accuracy</div>
+      </div>
+      <button class="proj-more" onclick="openModal('ecom')">View Details →</button>
+    </div>
+
+    <div class="proj-card reveal">
+      <div class="proj-num">06 — Campaign · UNIMAS 2022–2024</div>
+      <div class="proj-title">University Campaign Analytics</div>
+      <p class="proj-desc">Visual content strategy and analytics dashboards for large-scale university events. KPI tracking across all social platforms.</p>
+      <div class="proj-tags">
+        <span class="ptag g">Campaign Analytics</span><span class="ptag g">Motion Graphics</span>
+      </div>
+      <div style="margin-top:1.5rem">
+        <div class="pm-n" style="font-size:2.2rem;color:var(--gold)">4M+</div>
+        <div class="pm-l">Monthly views at peak</div>
+      </div>
+      <button class="proj-more" onclick="openModal('uni')">View Details →</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education" style="background:var(--bg2)">
+  <div class="sec-label">04 — Education</div>
+  <h2 class="sec-title reveal"><em>foundations</em></h2>
+  <div class="edu-grid">
+    <div class="edu-card reveal">
+      <div class="edu-school">University of Malaya</div>
+      <div class="edu-deg">Master of Data Science</div>
+      <div class="edu-yr">2025 — Present · Kuala Lumpur</div>
+      <div class="edu-detail">Data Visualisation, Statistical Modelling, Machine Learning for Analytics Applications.</div>
+    </div>
+    <div class="edu-card reveal" style="transition-delay:.1s">
+      <div class="edu-school">Universiti Malaysia Sarawak</div>
+      <div class="edu-deg">BSc Computer Science (Multimedia Computing)</div>
+      <div class="edu-yr">2020 — 2024 · Sarawak · CGPA 3.49</div>
+      <div class="edu-detail">UI/UX Design, Digital Media Production, Human-Computer Interaction, Graphic Design.</div>
+    </div>
+  </div>
+  <div style="margin-top:3rem" class="reveal">
+    <div class="sec-label" style="margin-bottom:.75rem">Certifications</div>
+    <div class="cert-row">
+      <div class="cert"><span class="cdot"></span>Google Analytics 4 Certified</div>
+      <div class="cert"><span class="cdot"></span>HubSpot Content Marketing</div>
+    </div>
+  </div>
+  <div style="margin-top:4rem">
+    <div class="sec-label reveal" style="margin-bottom:0">Leadership</div>
+    <div class="lead-grid">
+      <div class="lead-card reveal"><div class="lead-year">2024</div><div class="lead-title">Technical Program Director</div><div class="lead-org">Raspberry Pi IoT Mentoring Initiative — 25+ mentees in embedded systems programming</div></div>
+      <div class="lead-card reveal" style="transition-delay:.08s"><div class="lead-year">2023</div><div class="lead-title">Vice President</div><div class="lead-org">UNIMAS Esports Club — competitive gaming analytics & sponsor relationship management</div></div>
+      <div class="lead-card reveal" style="transition-delay:.12s"><div class="lead-year">2022–2024</div><div class="lead-title">Media & Digital Strategy Lead</div><div class="lead-org">FCSIT Technology Symposium, Swimming Club Championships, Academic Conferences</div></div>
+      <div class="lead-card reveal" style="transition-delay:.16s"><div class="lead-year">2023–2024</div><div class="lead-title">Senior Assistant Head</div><div class="lead-org">University-wide media campaigns — 15K+ student engagement, corporate partnership coordination</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="sec-label">05 — Contact</div>
+  <div class="contact-inner reveal">
+    <h2 class="sec-title" style="margin-bottom:1.5rem">LET'S BUILD<br><em>something</em></h2>
+    <p class="contact-sub">Open to collaborations in AdOps, data science, creative analytics,<br>and automation tooling. Based in Kuala Lumpur, Malaysia.</p>
+    <a href="mailto:leoznalz@gmail.com" class="contact-email">leoznalz@gmail.com</a>
+    <div class="social-row">
+      <a href="https://linkedin.com/in/leonal-sigar/" target="_blank" class="soc">↗ LinkedIn</a>
+      <a href="https://leonalsigar.my.canva.site/leo-digital-marketing" target="_blank" class="soc">↗ Portfolio</a>
+      <a href="tel:+60138254308" class="soc">+6013-825 4308</a>
+    </div>
+
+    <!-- CONTACT FORM (Formspree) -->
+    <div class="contact-form reveal" style="transition-delay:.15s">
+      <!-- IMPORTANT: Replace YOUR_FORM_ID below after signing up at formspree.io -->
+      <form id="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="name">Name</label>
+            <input class="form-input" type="text" id="name" name="name" placeholder="Your name" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="email">Email</label>
+            <input class="form-input" type="email" id="email" name="email" placeholder="your@email.com" required>
+          </div>
+          <div class="form-group full">
+            <label class="form-label" for="subject">Subject</label>
+            <input class="form-input" type="text" id="subject" name="subject" placeholder="What's this about?">
+          </div>
+          <div class="form-group full">
+            <label class="form-label" for="message">Message</label>
+            <textarea class="form-textarea" id="message" name="message" placeholder="Tell me about your project or opportunity..." required></textarea>
+          </div>
+        </div>
+        <button type="submit" class="form-btn" id="form-btn">Send Message</button>
+        <div class="form-success" id="form-success">Message sent — I'll be in touch soon.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 Leonal Sigar Anak Jame · Cognizant</p>
+  <p>English · Malay · Mandarin · Kuala Lumpur, Malaysia</p>
+</footer>
+
+<script>
+// ── CURSOR ──
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function loop(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop)})();
+document.querySelectorAll('a,button,.proj-card,.sk').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='18px';cur.style.height='18px';ring.style.width='48px';ring.style.height='48px'});
+  el.addEventListener('mouseleave',()=>{cur.style.width='8px';cur.style.height='8px';ring.style.width='32px';ring.style.height='32px'});
+});
+
+// ── THEME TOGGLE ──
+const html=document.documentElement;
+const themeBtn=document.getElementById('theme-btn');
+themeBtn.addEventListener('click',()=>{
+  html.setAttribute('data-theme',html.getAttribute('data-theme')==='dark'?'light':'dark');
+  localStorage.setItem('theme',html.getAttribute('data-theme'));
+});
+const saved=localStorage.getItem('theme');
+if(saved)html.setAttribute('data-theme',saved);
+
+// ── SCROLL REVEAL ──
+const io=new IntersectionObserver(entries=>entries.forEach(e=>{
+  if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}
+}),{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+// ── ANIMATED STAT COUNTERS ──
+const counterIo=new IntersectionObserver(entries=>entries.forEach(e=>{
+  if(e.isIntersecting){
+    const el=e.target;
+    const target=parseInt(el.dataset.count);
+    const suffix=el.dataset.suffix||'';
+    let current=0;
+    const step=target/50;
+    const timer=setInterval(()=>{
+      current=Math.min(current+step,target);
+      el.textContent=Math.round(current)+suffix;
+      if(current>=target)clearInterval(timer);
+    },30);
+    counterIo.unobserve(el);
+  }
+}),{threshold:.5});
+document.querySelectorAll('[data-count]').forEach(el=>counterIo.observe(el));
+
+// ── HERO DATA VIZ ──
+const vizTargets=[{bar:'b1',counter:'c1',val:94,suffix:'%'},{bar:'b2',counter:'c2',val:99.1,suffix:'%'},{bar:'b3',counter:'c3',val:98,suffix:'%'},{bar:'b4',counter:'c4',val:80,suffix:'%'}];
+const vizIo=new IntersectionObserver(entries=>entries.forEach(e=>{
+  if(e.isIntersecting){
+    vizTargets.forEach((t,i)=>{
+      setTimeout(()=>{
+        document.getElementById(t.bar).classList.add('go');
+        let v=0,target=t.val;
+        const step=target/60;
+        const timer=setInterval(()=>{
+          v=Math.min(v+step,target);
+          document.getElementById(t.counter).textContent=v.toFixed(v%1?1:0)+t.suffix;
+          if(v>=target)clearInterval(timer);
+        },25);
+      },i*200);
+    });
+    vizIo.unobserve(e.target);
+  }
+}),{threshold:.3});
+vizIo.observe(document.getElementById('hero-viz'));
+
+// ── MODAL DATA ──
+const modals={
+  agent:{
+    tag:'Internal Tool · Cognizant APAC',title:'AI Queue Management Agent',
+    body:`<p>Built an AI-assisted operational agent for the APAC ad operations team at Cognizant. The agent consolidates <strong>three distinct workflows</strong> — queue health scanning, report tracking, and campaign readiness checks — into a single unified tool using a Scenarios architecture.</p><p>Key engineering decision: hardcoded all team account identifiers to prevent display name resolution failures that caused zero-result queries for non-session users. Diagnosed and resolved a critical bug that surfaced during team lead testing, ensuring reliability across all 22 team members.</p><p>Operates via manual prompting — automated triggers were evaluated but deprioritised due to permissions constraints.</p>`,
+    metrics:[{n:'3',l:'Workflows unified'},{n:'22',l:'Team members'},{n:'0',l:'Errors after fix'}],
+    tags:['AI Agent','Workflow Automation','AdOps','APAC','Atlassian']
+  },
+  wip:{
+    tag:'Automation Suite · JP · AU · KR',title:'Live WIP Dashboard Suite',
+    body:`<p>A Google Apps Script automation suite that builds and maintains real-time work-in-progress dashboards for multiple regional pods — Japan (v5.0, full suite), Australia, and Korea.</p><p>The system auto-pulls data from source Jira data dumps, applies <strong>per-person colour coding</strong> for instant visual scanning, maintains an SLA log for performance tracking, and includes sidebar dashboards for at-a-glance status. The onChange trigger means dashboards update automatically — no manual refresh, no extra steps.</p><p>Japan's tracker is the most mature, including dedicated sheets for recurring tasks, EOC tracking, and a setup guide. AU and KR followed the same proven architecture.</p>`,
+    metrics:[{n:'3',l:'Regional pods'},{n:'5.0',l:'JP version'},{n:'Auto',l:'Trigger refresh'}],
+    tags:['Google Apps Script','Sheets Automation','Jira Integration','SLA Tracking','Multi-region']
+  },
+  repo:{
+    tag:'Internal Tool · APAC Team',title:'Team Knowledge Repository',
+    body:`<p>A Google Apps Script web app backed by Google Sheets, designed to capture and surface exemplary work references with attached screenshots — creating a reusable quality benchmark for the team.</p><p>During development, identified and resolved a complex bug in the screenshot upload pipeline: the system was passing data URIs (which include a base64 header prefix) instead of raw base64, causing uploads to fail silently. Fixing this required understanding the Drive API's file creation expectations precisely.</p><p>Architecture: single parent Drive folder, Screenshots subfolder, spreadsheet index, and an optional Looker Studio dashboard layer for visual analytics over the repository contents.</p>`,
+    metrics:[{n:'1',l:'Bug squashed'},{n:'Drive',l:'API integration'},{n:'Team',l:'Wide access'}],
+    tags:['Apps Script','Google Sheets','Drive API','Knowledge Management','Looker Studio']
+  },
+  nlp:{
+    tag:'ML Research · University of Malaya 2025',title:'Mental Health Crisis Detection — NLP System',
+    body:`<p>Built NLP classification models using Python, NLTK, and Transformer-based architectures to detect mental health crises in text data. The core challenge: in safety-critical applications, <strong>false negatives are more costly than false positives</strong> — missing a genuine crisis signal is unacceptable.</p><p>Achieved 94.2% classification accuracy while specifically optimising to reduce the false negative rate by 44%. This required careful threshold tuning, class weighting, and ensemble techniques rather than just maximising overall accuracy.</p><p>Created interactive data visualisation dashboards using matplotlib to communicate model performance metrics — confusion matrices, ROC curves, precision-recall tradeoffs — to non-technical stakeholders in an accessible way.</p>`,
+    metrics:[{n:'94.2%',l:'Accuracy'},{n:'44%',l:'FNR reduction'},{n:'UM',l:'2025'}],
+    tags:['Python','Transformers','scikit-learn','NLTK','Data Visualisation','NLP']
+  },
+  ecom:{
+    tag:'ML Research · University of Malaya 2025',title:'E-commerce Sales Prediction & Analytics',
+    body:`<p>Developed machine learning forecasting models to predict e-commerce sales using XGBoost and Support Vector Regression (SVR), achieving a 99.1% R² accuracy score on the test dataset.</p><p>The project included <strong>statistical analysis of 280+ survey responses</strong> to understand buyer behaviour patterns, with results visualised as infographics and statistical charts for market comprehension.</p><p>Built an interactive GUI dashboard using Tkinter with embedded data visualisation components — allowing real-time parameter adjustment and instant visual feedback on model outputs. Designed for non-technical users who needed to run what-if analyses without writing code.</p>`,
+    metrics:[{n:'99.1%',l:'R² Accuracy'},{n:'280+',l:'Survey responses'},{n:'Live',l:'GUI dashboard'}],
+    tags:['Python','XGBoost','SVR','Tkinter','Statistical Visualisation','scikit-learn']
+  },
+  uni:{
+    tag:'Campaign · UNIMAS 2022–2024',title:'University Campaign Analytics',
+    body:`<p>Led the visual content strategy and analytics measurement for large-scale university events at UNIMAS — including Welcoming Week, Swimming Club Championships, and the FCSIT Technology Symposium.</p><p>Designed all campaign visuals from scratch: social media graphics, motion graphics, event posters, and promotional video content. Built <strong>Google Data Studio dashboards</strong> to track KPIs including reach, engagement rate, follower growth, and event attendance correlation.</p><p>At peak, campaigns generated over 4M monthly views across Instagram, Facebook, TikTok, and LinkedIn — contributing to an 80% increase in university visibility metrics and successful corporate sponsorship acquisition for multiple student events.</p>`,
+    metrics:[{n:'4M+',l:'Monthly views'},{n:'80%',l:'Visibility lift'},{n:'15',l:'Organisations'}],
+    tags:['Campaign Strategy','Google Data Studio','Motion Graphics','Infographics','Social Media','Analytics']
+  }
+};
+
+function openModal(key){
+  const m=modals[key];
+  document.getElementById('modal-content').innerHTML=`
+    <div class="modal-tag">${m.tag}</div>
+    <div class="modal-title">${m.title}</div>
+    <div class="modal-body">${m.body}</div>
+    <div class="modal-metrics">${m.metrics.map(x=>`<div><div class="modal-metric-n">${x.n}</div><div class="modal-metric-l">${x.l}</div></div>`).join('')}</div>
+    <div class="modal-tags">${m.tags.map(t=>`<span class="ptag t">${t}</span>`).join('')}</div>`;
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+document.getElementById('modal-close').addEventListener('click',closeModal);
+document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');document.body.style.overflow='';}
+
+// ── CONTACT FORM (Formspree) ──
+document.getElementById('contact-form').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const btn=document.getElementById('form-btn');
+  btn.disabled=true;btn.textContent='Sending...';
+  const data=new FormData(this);
+  try{
+    const res=await fetch(this.action,{method:'POST',body:data,headers:{Accept:'application/json'}});
+    if(res.ok){
+      this.reset();
+      document.getElementById('form-success').style.display='block';
+      btn.textContent='Sent!';
+    } else {
+      btn.disabled=false;btn.textContent='Try Again';
+    }
+  } catch{btn.disabled=false;btn.textContent='Try Again'}
+});
+</script>
+</body>
+</html>
